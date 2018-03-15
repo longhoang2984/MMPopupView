@@ -30,15 +30,27 @@
 - (instancetype) initWithInputTitle:(NSString *)title
                              detail:(NSString *)detail
                         placeholder:(NSString *)inputPlaceholder
+                       isHideCancel: (BOOL)isHideCancelButton
                             handler:(MMPopupInputHandler)inputHandler
 {
     MMAlertViewConfig *config = [MMAlertViewConfig globalConfig];
-    
-    NSArray *items =@[
-                      MMItemMake(config.defaultTextCancel, MMItemTypeHighlight, nil),
-                      MMItemMake(config.defaultTextConfirm, MMItemTypeHighlight, nil)
-                      ];
-    return [self initWithTitle:title detail:detail items:items inputPlaceholder:inputPlaceholder inputHandler:inputHandler];
+    NSArray *items;
+    if (isHideCancelButton) {
+        items =@[
+                 MMItemMake(config.defaultTextConfirm, MMItemTypeHighlight, nil)
+                 ];
+    }else {
+        items =@[
+                 MMItemMake(config.defaultTextCancel, MMItemTypeHighlight, nil),
+                 MMItemMake(config.defaultTextConfirm, MMItemTypeHighlight, nil)
+                 ];
+    }
+    self.isHideCancelButton = isHideCancelButton;
+//    NSArray *items =@[
+//                      MMItemMake(config.defaultTextCancel, MMItemTypeHighlight, nil),
+//                      MMItemMake(config.defaultTextConfirm, MMItemTypeHighlight, nil)
+//                      ];
+    return [self initWithTitle:title detail:detail items:items inputPlaceholder:inputPlaceholder isHideCancel:isHideCancelButton inputHandler:inputHandler];
 }
 
 - (instancetype) initWithConfirmTitle:(NSString*)title
@@ -57,13 +69,15 @@
                         detail:(NSString*)detail
                          items:(NSArray*)items
 {
-    return [self initWithTitle:title detail:detail items:items inputPlaceholder:nil inputHandler:nil];
+    self.isHideCancelButton = false;
+    return [self initWithTitle:title detail:detail items:items inputPlaceholder:nil isHideCancel:false inputHandler:nil];
 }
 
 - (instancetype)initWithTitle:(NSString *)title
                        detail:(NSString *)detail
                         items:(NSArray *)items
              inputPlaceholder:(NSString *)inputPlaceholder
+                 isHideCancel: (BOOL)isHideCancelButton
                  inputHandler:(MMPopupInputHandler)inputHandler
 {
     self = [super init];
@@ -164,7 +178,7 @@
             
             UIButton *btn = [UIButton mm_buttonWithTarget:self action:@selector(actionButton:)];
             [self.buttonView addSubview:btn];
-            btn.tag = i;
+            btn.tag = isHideCancelButton ? 1 : i;
             
             [btn mas_makeConstraints:^(MASConstraintMaker *make) {
                 
@@ -244,7 +258,7 @@
 
 - (void)actionButton:(UIButton*)btn
 {
-    MMPopupItem *item = self.actionItems[btn.tag];
+    MMPopupItem *item = self.actionItems[self.isHideCancelButton ? 0 : btn.tag];
     
     if ( item.disabled )
     {
