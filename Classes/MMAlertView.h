@@ -14,10 +14,12 @@ typedef void(^MMPopupInputHandler)(NSString *text);
 @interface MMAlertView : MMPopupView
 
 @property (nonatomic, assign) NSUInteger maxInputLength;    // default is 0. Means no length limit.
-
+    @property (nonatomic, assign) BOOL isHideCancelButton;
+    
 - (instancetype) initWithInputTitle:(NSString*)title
                              detail:(NSString*)detail
                         placeholder:(NSString*)inputPlaceholder
+                        isHideCancel: (BOOL)isHideCancelButton
                             handler:(MMPopupInputHandler)inputHandler;
 
 - (instancetype) initWithConfirmTitle:(NSString*)title
